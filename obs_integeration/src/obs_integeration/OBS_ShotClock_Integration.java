@@ -10,6 +10,16 @@ import java.util.Scanner;
 
 import org.json.JSONObject;
 
+/**
+ * The following code takes a file containing a single line formatted in JSON
+ * that reads values from the string and outputs individual values to a file
+ * that OBS can then read from. Currently the code only allows the gameclock,
+ * shotclock, players left, timeouts left and points. More can be easily added
+ * from the JSON file if needed.
+ * 
+ * @author Jake Grow
+ *
+ */
 public class OBS_ShotClock_Integration {
 
 // Constants--------------------------------------------------------------------
@@ -85,7 +95,7 @@ public class OBS_ShotClock_Integration {
         try {
             file = new PrintWriter(new BufferedWriter(
                     new FileWriter(path + "\\" + team + "_" + type + ".txt")));
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Error opening " + team + "_" + type
                     + "file. Check that the proper path was entered.");
             return;
@@ -131,9 +141,9 @@ public class OBS_ShotClock_Integration {
         try {
             file = new PrintWriter(new BufferedWriter(
                     new FileWriter(path + "\\" + gameclock + ".txt")));
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Error opening " + gameclock
-                    + "file. Check that the proper path was entered.");
+                    + "file.");
             return;
         }
 
@@ -155,51 +165,57 @@ public class OBS_ShotClock_Integration {
 
 // Main code--------------------------------------------------------------------
     public static void main(String[] args) {
-        // Get scanner to be able to read from console
-        Scanner scanner = new Scanner(System.in);
-
-        // Get exact location and name of JSON string file
-        System.out.println("Enter in exact path and name of JSON string file:");
-        String json_file = scanner.nextLine();
-        // Test that the file can be opened
-        try {
-            BufferedReader file = new BufferedReader(new FileReader(json_file));
-            file.close();
-        } catch (IOException e) {
-            System.err.println("Error opening JSON file.");
-            return;
+    	// Get scanner to be able to read from console
+        Scanner console = new Scanner(System.in);
+        
+        // Repeatedly ask user for a proper file
+        String json_file = "";
+        while(true) {
+            System.out.println("Enter the exact path and file name of JSON string file:");
+            json_file = console.nextLine();
+            BufferedReader file;
+            try {
+                file = new BufferedReader(new FileReader(json_file));
+                file.close();
+                break;
+           } catch (Exception e) {
+               System.err.println("Error finding JSON file. Enter in the EXACT path and name of the JSON file.");
+           }
         }
-
+       
         // Get exact path to output the files that OBS will read from
         System.out.println(
-                "Enter in exact path to write files that OBS will read from:");
-        String path = scanner.nextLine();
+                "Enter in exact path to write files that OBS will read from: "
+                + "(if no path is specified resulting files will be placed in the same folder as jar file)");
+        String path = console.nextLine();
 
         System.out.println(
                 "Starting OBS integration program. (type stop to terminate program)");
-
+        
         // Create a separate thread to monitor input from the console
         Thread inputThread = new Thread(() -> {
             while (true) {
-                String userInput = scanner.nextLine().trim();
+                String userInput = console.nextLine().trim();
                 // Stop the program from continuing to run
                 if (userInput.equalsIgnoreCase("stop")) {
                     System.out.println("Stopping the program...");
-                    scanner.close();
+                    console.close();
                     // Output that program has successfully ended
                     System.out.println("Program stopped successfully.");
                     System.exit(0); // Terminate the entire program
                 }
             }
         });
+        
+        // Start thread
+        inputThread.start();
 
         // Declare values
         Integer value1;
         Integer value2;
         String seconds;
-
-        // Start loop and thread
-        inputThread.start();
+        
+        // Start infinite loop
         while (true) {
             // Open JSON file
             BufferedReader file;
@@ -214,12 +230,12 @@ public class OBS_ShotClock_Integration {
             String json_string;
             try {
                 json_string = file.readLine();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println("Error reading from JSON file.");
                 // Close file
                 try {
                     file.close();
-                } catch (IOException f) {
+                } catch (Exception f) {
                     System.err.println(
                             "Error reading from and closing JSON file.");
                     return;
@@ -300,7 +316,7 @@ public class OBS_ShotClock_Integration {
             // Close file
             try {
                 file.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println("Error closing test file.");
                 return;
             }
