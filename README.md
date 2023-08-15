@@ -5,6 +5,6 @@ Program used to read from a JSON string (example in obs_integration/data/JSON_te
 How to run program:
 - Download the provided jar file called OBS_Integration.jar and put into any desired location
 - Go to command prompt and type cd and then the exact path to where you put the jar file
-- Then type java -jar OB_Integration.jar (*you must have downloaded java se development kit 17.0.8 here: https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+- Then type java -jar OBS_Integration.jar (you must have downloaded java se development kit 17.0.8 here: https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - The program will ask for the exact path and file name of the JSON string file and then ask for the exact path to the folder in which to output the files
 - The program should run aftwerwards and produce any error messages pertaining to what was provided. The user is required to type stop to end the program.
