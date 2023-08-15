@@ -15,16 +15,6 @@ public class OBS_ShotClock_Integration {
 // Constants--------------------------------------------------------------------
 
     /*
-     * JSON File Name
-     */
-    private static final String JSON_FILE = "data/JSON_testFile"; // TODO add location and path for JSON string file
-
-    /*
-     * OBS file path
-     */
-    private static final String PATH = "C:\\DodgeballFiles\\OBS Integration\\OBS Data Files\\";
-
-    /*
      * Parent type
      */
     private static final String TEAM1 = "team1";
@@ -82,16 +72,22 @@ public class OBS_ShotClock_Integration {
      * @param type
      *            which type the value corresponds to
      * @param value
+     *            the value to the corresponding type
+     * @param path
+     *            the exact path in which the values will the OBS files will be
+     *            uploaded to
      *
      */
-    private static void writeToFile(String team, String type, int value) {
+    private static void writeToFile(String team, String type, int value,
+            String path) {
         // Open file
         PrintWriter file;
         try {
             file = new PrintWriter(new BufferedWriter(
-                    new FileWriter(PATH + team + "_" + type + ".txt")));
+                    new FileWriter(path + "\\" + team + "_" + type + ".txt")));
         } catch (Exception e) {
-            System.err.println("Error opening " + team + "_" + type + "file");
+            System.err.println("Error opening " + team + "_" + type
+                    + "file. Check that the proper path was entered.");
             return;
         }
 
@@ -123,17 +119,21 @@ public class OBS_ShotClock_Integration {
      *            minutes
      * @param value2
      *            seconds
+     * @param path
+     *            the exact path in which the values will the OBS files will be
+     *            uploaded to
      *
      */
-    private static void writeToFile(String gameclock, int value1,
-            String value2) {
+    private static void writeToFile(String gameclock, int value1, String value2,
+            String path) {
         // Open file
         PrintWriter file;
         try {
             file = new PrintWriter(new BufferedWriter(
-                    new FileWriter(PATH + gameclock + ".txt")));
+                    new FileWriter(path + "\\" + gameclock + ".txt")));
         } catch (Exception e) {
-            System.err.println("Error opening " + gameclock + "file");
+            System.err.println("Error opening " + gameclock
+                    + "file. Check that the proper path was entered.");
             return;
         }
 
@@ -155,11 +155,28 @@ public class OBS_ShotClock_Integration {
 
 // Main code--------------------------------------------------------------------
     public static void main(String[] args) {
-        System.out.println(
-                "Starting OBS integration program. (type stop to terminate program)");
-
         // Get scanner to be able to read from console
         Scanner scanner = new Scanner(System.in);
+
+        // Get exact location and name of JSON string file
+        System.out.println("Enter in exact path and name of JSON string file:");
+        String json_file = scanner.nextLine();
+        // Test that the file can be opened
+        try {
+            BufferedReader file = new BufferedReader(new FileReader(json_file));
+            file.close();
+        } catch (IOException e) {
+            System.err.println("Error opening JSON file.");
+            return;
+        }
+
+        // Get exact path to output the files that OBS will read from
+        System.out.println(
+                "Enter in exact path to write files that OBS will read from:");
+        String path = scanner.nextLine();
+
+        System.out.println(
+                "Starting OBS integration program. (type stop to terminate program)");
 
         // Create a separate thread to monitor input from the console
         Thread inputThread = new Thread(() -> {
@@ -187,7 +204,7 @@ public class OBS_ShotClock_Integration {
             // Open JSON file
             BufferedReader file;
             try {
-                file = new BufferedReader(new FileReader(JSON_FILE));
+                file = new BufferedReader(new FileReader(json_file));
             } catch (IOException e) {
                 System.err.println("Error opening JSON file.");
                 return;
@@ -226,7 +243,7 @@ public class OBS_ShotClock_Integration {
             }
 
             // Write the time to the proper file
-            writeToFile(GAMECLOCK, value1, seconds);
+            writeToFile(GAMECLOCK, value1, seconds, path);
 
             /*------------------------------------------------------------------
              * Shot clock
@@ -237,8 +254,8 @@ public class OBS_ShotClock_Integration {
             value2 = getValue(json_string, TEAM2, SHOTCLOCK);
 
             // Write to files
-            writeToFile(TEAM1, SHOTCLOCK, value1);
-            writeToFile(TEAM2, SHOTCLOCK, value2);
+            writeToFile(TEAM1, SHOTCLOCK, value1, path);
+            writeToFile(TEAM2, SHOTCLOCK, value2, path);
 
             /*------------------------------------------------------------------
              * Points
@@ -249,8 +266,8 @@ public class OBS_ShotClock_Integration {
             value2 = getValue(json_string, TEAM2, POINTS);
 
             // Write to files
-            writeToFile(TEAM1, POINTS, value1);
-            writeToFile(TEAM2, POINTS, value2);
+            writeToFile(TEAM1, POINTS, value1, path);
+            writeToFile(TEAM2, POINTS, value2, path);
 
             /*------------------------------------------------------------------
              * Timeouts
@@ -261,8 +278,8 @@ public class OBS_ShotClock_Integration {
             value2 = getValue(json_string, TEAM2, TIMEOUTS);
 
             // Write to files
-            writeToFile(TEAM1, TIMEOUTS, value1);
-            writeToFile(TEAM2, TIMEOUTS, value2);
+            writeToFile(TEAM1, TIMEOUTS, value1, path);
+            writeToFile(TEAM2, TIMEOUTS, value2, path);
 
             /*------------------------------------------------------------------
              * Players left
@@ -273,8 +290,8 @@ public class OBS_ShotClock_Integration {
             value2 = getValue(json_string, TEAM2, PLAYERS);
 
             // Write to files
-            writeToFile(TEAM1, PLAYERS, value1);
-            writeToFile(TEAM2, PLAYERS, value2);
+            writeToFile(TEAM1, PLAYERS, value1, path);
+            writeToFile(TEAM2, PLAYERS, value2, path);
 
             /*------------------------------------------------------------------
              * Cleanup
