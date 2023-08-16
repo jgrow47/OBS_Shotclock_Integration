@@ -1,4 +1,4 @@
-# Dodgeball-Streaming
+# OBS_Integration
 Program used to read from a JSON string (example in obs_integration/data/JSON_testFile) and output individual values to corresponding files in a specfic folder to allow OBS to read these files. Currently the program reads from the JSON string file every 100 ms (1/10 second) and can be set to go faster. The refresh will be set higher when proper tests are able to take place.
 
 How to run program:
