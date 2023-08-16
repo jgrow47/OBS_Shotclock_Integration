@@ -193,16 +193,16 @@ public class OBS_ShotClock_Integration {
                 "Starting OBS integration program. (type stop to terminate program)");
         
         // Create a separate thread to monitor input from the console
+        final boolean stop[] = {false};
         Thread inputThread = new Thread(() -> {
-            while (true) {
+            while (!stop[0]) {
                 String userInput = console.nextLine().trim();
-                // Stop the program from continuing to run
+                // Check if user has typed stop
                 if (userInput.equalsIgnoreCase("stop")) {
+                    // Close console from input and end loops
                     System.out.println("Stopping the program...");
                     console.close();
-                    // Output that program has successfully ended
-                    System.out.println("Program stopped successfully.");
-                    System.exit(0); // Terminate the entire program
+                    stop[0] = true;
                 }
             }
         });
@@ -215,8 +215,8 @@ public class OBS_ShotClock_Integration {
         Integer value2;
         String seconds;
         
-        // Start infinite loop
-        while (true) {
+        // Start loop
+        while (!stop[0]) {
             // Open JSON file
             BufferedReader file;
             try {
@@ -313,11 +313,11 @@ public class OBS_ShotClock_Integration {
              * Cleanup
              */
 
-            // Close file
+            // Close JSON file
             try {
                 file.close();
             } catch (Exception e) {
-                System.err.println("Error closing test file.");
+                System.err.println("Error closing JSON file.");
                 return;
             }
 
@@ -328,5 +328,6 @@ public class OBS_ShotClock_Integration {
                 e.printStackTrace();
             }
         }
+        System.out.println("Program stopped successfully.");
     }
 }
